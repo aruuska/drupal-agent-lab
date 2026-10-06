@@ -1,0 +1,5 @@
+name: 'Reading Time'
+type: module
+description: 'Laskee artikkelin arvioidun lukuajan.'
+core_version_requirement: ^10.3 || ^11
+package: Custom
