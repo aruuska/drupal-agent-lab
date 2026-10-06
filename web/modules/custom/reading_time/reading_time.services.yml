@@ -1,0 +1,3 @@
+services:
+  reading_time.calculator:
+    class: Drupal\reading_time\ReadingTimeCalculator
