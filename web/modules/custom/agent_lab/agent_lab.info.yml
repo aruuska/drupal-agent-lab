@@ -1,0 +1,5 @@
+name: 'Agent Lab'
+type: module
+description: 'Agenttiputken testimoduuli.'
+core_version_requirement: ^10.3 || ^11
+package: Custom

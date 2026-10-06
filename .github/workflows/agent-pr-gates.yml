@@ -1,0 +1,62 @@
+# Portit ajetaan GitHubissa, agenttiympäristön ulkopuolella.
+# Merkitse jobit pakollisiksi main-haaran suojauksessa.
+name: agent-pr-gates
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, pdo_sqlite, zip
+          coverage: none
+          tools: composer:v2
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpunit -c phpunit.xml
+
+  coding-standards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.3', extensions: gd, coverage: none, tools: composer:v2 }
+      - run: composer install --no-interaction --no-progress
+      - run: >
+          vendor/bin/phpcs --standard=Drupal,DrupalPractice
+          --extensions=php,module,inc,install,test,profile,theme,info,yml
+          web/modules/custom
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+
+  protected-paths:
+    if: startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Tarkista kriittiset polut
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          HITS=$(echo "$CHANGED" | grep -E '^(\.github/|composer\.(json|lock)|phpunit\.xml|web/sites/)|\.(routing|permissions)\.yml$|\.install$' || true)
+          if [ -n "$HITS" ]; then
+            echo "::warning::Agentin PR koskee kriittisiä polkuja:"; echo "$HITS"
+            gh pr edit "$PR" --add-label needs-senior-review
+          fi

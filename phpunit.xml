@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Unit- ja Kernel-testit SQLitellä, ilman verkkoa ja ilman erillistä tietokantaa. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="web/core/tests/bootstrap.php"
+         colors="true"
+         cacheDirectory="/tmp/phpunit-cache">
+  <php>
+    <ini name="error_reporting" value="32767"/>
+    <ini name="memory_limit" value="-1"/>
+    <env name="SIMPLETEST_DB" value="sqlite://localhost//tmp/test.sqlite"/>
+    <env name="SIMPLETEST_BASE_URL" value="http://localhost"/>
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="/tmp"/>
+  </php>
+  <testsuites>
+    <testsuite name="custom">
+      <directory>web/modules/custom</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

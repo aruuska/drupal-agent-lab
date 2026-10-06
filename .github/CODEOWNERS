@@ -1,0 +1,7 @@
+# Korvaa @OMA-TUNNUS omalla GitHub-tunnuksellasi tai tiimillä.
+/.github/                     @OMA-TUNNUS
+composer.json                 @OMA-TUNNUS
+composer.lock                 @OMA-TUNNUS
+phpunit.xml                   @OMA-TUNNUS
+/web/sites/                   @OMA-TUNNUS
+/web/modules/custom/*/tests/  @OMA-TUNNUS
